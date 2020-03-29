@@ -2,6 +2,7 @@ const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
 const cors = require("cors");
+const { USER_BOT } = require("./utils/variables");
 
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
 
@@ -23,12 +24,12 @@ io.on("connect", socket => {
     socket.join(user.room);
 
     socket.emit("message", {
-      user: "admin",
+      user: USER_BOT,
       text: `${user.name}, welcome to room ${user.room}.`
     });
     socket.broadcast
       .to(user.room)
-      .emit("message", { user: "admin", text: `${user.name} has joined!` });
+      .emit("message", { user: USER_BOT, text: `${user.name} has joined!` });
 
     io.to(user.room).emit("roomData", {
       room: user.room,
@@ -51,7 +52,7 @@ io.on("connect", socket => {
 
     if (user) {
       io.to(user.room).emit("message", {
-        user: "Admin",
+        user: USER_BOT,
         text: `${user.name} has left.`
       });
       io.to(user.room).emit("roomData", {
