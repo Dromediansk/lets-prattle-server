@@ -9,13 +9,14 @@ const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
 const router = require("./router");
 
 const app = express();
+
 const server = http.createServer(app);
 const io = socketio(server);
 
 app.use(cors());
 app.use(router);
 
-io.on("connect", socket => {
+io.on("connect", (socket) => {
   socket.on("join", ({ name, room }, callback) => {
     const { error, user } = addUser({ id: socket.id, name, room });
 
@@ -25,7 +26,7 @@ io.on("connect", socket => {
 
     socket.emit("message", {
       user: USER_BOT,
-      text: `${user.name}, welcome to room ${user.room}.`
+      text: `${user.name}, welcome to room ${user.room}.`,
     });
     socket.broadcast
       .to(user.room)
@@ -33,10 +34,23 @@ io.on("connect", socket => {
 
     io.to(user.room).emit("roomData", {
       room: user.room,
-      users: getUsersInRoom(user.room)
+      users: getUsersInRoom(user.room),
     });
 
     callback();
+  });
+
+  socket.on("typing", (data) => {
+    const user = getUser(socket.id);
+
+    socket.broadcast.to(data.room).emit("notifyTyping", {
+      user: data.name,
+      message: data.message,
+    });
+  });
+
+  socket.on("stopTyping", (data) => {
+    socket.broadcast.to(data.room).emit("notifyStopTyping");
   });
 
   socket.on("sendMessage", (message, callback) => {
@@ -53,11 +67,11 @@ io.on("connect", socket => {
     if (user) {
       io.to(user.room).emit("message", {
         user: USER_BOT,
-        text: `${user.name} has left.`
+        text: `${user.name} has left.`,
       });
       io.to(user.room).emit("roomData", {
         room: user.room,
-        users: getUsersInRoom(user.room)
+        users: getUsersInRoom(user.room),
       });
     }
   });
