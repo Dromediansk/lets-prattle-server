@@ -41,8 +41,6 @@ io.on("connect", (socket) => {
   });
 
   socket.on("typing", (data) => {
-    const user = getUser(socket.id);
-
     socket.broadcast.to(data.room).emit("notifyTyping", {
       user: data.name,
       message: data.message,
