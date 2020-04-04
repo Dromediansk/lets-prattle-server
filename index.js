@@ -3,6 +3,7 @@ const express = require("express");
 const socketio = require("socket.io");
 const cors = require("cors");
 const { USER_BOT } = require("./utils/variables");
+const dayjs = require("dayjs");
 
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
 
@@ -27,6 +28,7 @@ io.on("connect", (socket) => {
     socket.emit("message", {
       user: USER_BOT,
       text: `${user.name}, welcome to room ${user.room}.`,
+      time: dayjs().format("HH:mm"),
     });
     socket.broadcast
       .to(user.room)
@@ -53,8 +55,13 @@ io.on("connect", (socket) => {
 
   socket.on("sendMessage", (message, callback) => {
     const user = getUser(socket.id);
+    console.log("user", user);
 
-    io.to(user.room).emit("message", { user: user.name, text: message });
+    io.to(user.room).emit("message", {
+      user: user.name,
+      text: message,
+      time: dayjs().format("HH:mm"),
+    });
 
     callback();
   });
@@ -66,6 +73,7 @@ io.on("connect", (socket) => {
       io.to(user.room).emit("message", {
         user: USER_BOT,
         text: `${user.name} has left.`,
+        time: dayjs().format("HH:mm"),
       });
       io.to(user.room).emit("roomData", {
         room: user.room,
