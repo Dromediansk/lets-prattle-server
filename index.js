@@ -30,9 +30,11 @@ io.on("connect", (socket) => {
       text: `${user.name}, welcome to room ${user.room}.`,
       time: dayjs().format("HH:mm"),
     });
-    socket.broadcast
-      .to(user.room)
-      .emit("message", { user: USER_BOT, text: `${user.name} has joined!` });
+    socket.broadcast.to(user.room).emit("message", {
+      user: USER_BOT,
+      text: `${user.name} has joined!`,
+      time: dayjs().format("HH:mm"),
+    });
 
     io.to(user.room).emit("roomData", {
       room: user.room,
@@ -55,7 +57,6 @@ io.on("connect", (socket) => {
 
   socket.on("sendMessage", (message, callback) => {
     const user = getUser(socket.id);
-    console.log("user", user);
 
     io.to(user.room).emit("message", {
       user: user.name,
@@ -70,6 +71,9 @@ io.on("connect", (socket) => {
     const user = removeUser(socket.id);
 
     if (user) {
+      io.to(user.room).emit("notifyStopTyping", {
+        room: user.room,
+      });
       io.to(user.room).emit("message", {
         user: USER_BOT,
         text: `${user.name} has left.`,
