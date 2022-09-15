@@ -1,5 +1,1 @@
-const USER_BOT = "BOT";
-
-module.exports = {
-  USER_BOT
-};
+export const USER_BOT = "USER_BOT";

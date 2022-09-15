@@ -1,27 +1,32 @@
-const http = require("http");
-const express = require("express");
-const socketio = require("socket.io");
-const cors = require("cors");
-const { USER_BOT } = require("./utils/variables");
-const dayjs = require("dayjs");
+import * as dotenv from "dotenv";
+import { createServer } from "http";
+import express from "express";
+import { Server } from "socket.io";
+import cors from "cors";
+import dayjs from "dayjs";
+import { USER_BOT } from "./utils/variables.js";
 
-const { addUser, removeUser, getUser, getUsersInRoom } = require("./users");
+import { addUser, removeUser, getUser, getUsersInRoom } from "./users.js";
 
-const router = require("./router");
+import router from "./router.js";
+
+dotenv.config();
 
 const app = express();
 
-const server = http.createServer(app);
-const io = socketio(server);
+const httpServer = createServer(app);
+const io = new Server(httpServer);
 
 app.use(cors());
 app.use(router);
 
-io.on("connect", (socket) => {
+io.on("connection", (socket) => {
   socket.on("join", ({ name, room }, callback) => {
     const { error, user } = addUser({ id: socket.id, name, room });
 
-    if (error) return callback(error);
+    if (error) {
+      return callback(error);
+    }
 
     socket.join(user.room);
 
@@ -87,6 +92,8 @@ io.on("connect", (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
-server.listen(PORT, () => console.log(`Server has started on port ${PORT}.`));
+httpServer.listen(PORT, () =>
+  console.log(`Server has started on port ${PORT}.`)
+);
