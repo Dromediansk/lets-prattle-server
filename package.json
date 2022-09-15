@@ -4,6 +4,10 @@
   "description": "",
   "main": "index.js",
   "type": "module",
+  "engines": {
+    "npm": ">=8.0.0",
+    "node": ">=16.0.0"
+  },
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
@@ -21,6 +25,5 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.19"
-  },
-  "packageManager": "yarn@3.2.3"
+  }
 }
