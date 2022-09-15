@@ -2,7 +2,6 @@ import * as dotenv from "dotenv";
 import { createServer } from "http";
 import express from "express";
 import { Server } from "socket.io";
-import cors from "cors";
 import dayjs from "dayjs";
 import { USER_BOT } from "./utils/variables.js";
 
@@ -15,9 +14,13 @@ dotenv.config();
 const app = express();
 
 const httpServer = createServer(app);
-const io = new Server(httpServer);
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.CLIENT_HOST,
+    methods: ["GET", "POST"],
+  },
+});
 
-app.use(cors());
 app.use(router);
 
 io.on("connection", (socket) => {

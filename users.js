@@ -1,3 +1,5 @@
+import { USER_ALREADY_TAKEN } from "./utils/errors.js";
+
 const users = [];
 
 export const addUser = ({ id, name, room }) => {
@@ -9,7 +11,7 @@ export const addUser = ({ id, name, room }) => {
   );
 
   if (existingUser) {
-    return { error: "This username is already taken" };
+    return { error: USER_ALREADY_TAKEN };
   }
 
   const user = { id, name, room };

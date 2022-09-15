@@ -1,0 +1,1 @@
+export const USER_ALREADY_TAKEN = "USER_ALREADY_TAKEN";
