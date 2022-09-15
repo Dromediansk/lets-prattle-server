@@ -7,8 +7,6 @@ import { USER_BOT } from "./utils/variables.js";
 
 import { addUser, removeUser, getUser, getUsersInRoom } from "./users.js";
 
-import router from "./router.js";
-
 dotenv.config();
 
 const app = express();
@@ -20,8 +18,6 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST"],
   },
 });
-
-app.use(router);
 
 io.on("connection", (socket) => {
   socket.on("join", ({ name, room }, callback) => {
